@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query, HTTPException
 
 from http import HTTPStatus
+
+from uuid import UUID
 
 
 from src.database import Transaction, session
@@ -31,6 +33,16 @@ def create_transaction(transaction_data: TransactionData):
     response_model=TransactionResponse,
     status_code=HTTPStatus.OK,
 )
-def read_transaction(transaction_id: int):
+def read_transaction(transaction_id: UUID):
     transaction = session.query(Transaction).get(transaction_id)
     return transaction
+
+
+@app.get(
+    "/transaction",
+    response_model=list[TransactionResponse],
+    status_code=HTTPStatus.OK,
+)
+def read_transactions(limit: UUID = Query(10, le=100), offset: int = Query(0, ge=0)):
+    transactions = session.query(Transaction).offset(offset).limit(limit).all()
+    return transactions

@@ -46,3 +46,19 @@ def read_transaction(transaction_id: UUID):
 def read_transactions(limit: UUID = Query(10, le=100), offset: int = Query(0, ge=0)):
     transactions = session.query(Transaction).offset(offset).limit(limit).all()
     return transactions
+
+
+@app.put(
+    "/transaction/{transaction_id}",
+    response_model=TransactionResponse,
+    status_code=HTTPStatus.OK,
+)
+def update_transaction(transaction_id: UUID, transaction_data: TransactionData):
+    transaction = session.query(Transaction).get(transaction_id)
+    transaction.amount = transaction_data.amount
+    transaction.date = transaction_data.date
+    transaction.type = transaction_data.type
+
+    session.commit()
+
+    return transaction

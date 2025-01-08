@@ -1,0 +1,9 @@
+install python
+
+python3 -m venv venv to create virtual environment
+
+source venv/bin/activate to activate virtual environment
+
+pip install -r requirements.txt to install dependencies
+
+uvicorn main:app --reload to run the server

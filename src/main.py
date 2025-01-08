@@ -62,3 +62,20 @@ def update_transaction(transaction_id: UUID, transaction_data: TransactionData):
     session.commit()
 
     return transaction
+
+
+@app.delete(
+    "/transaction/{transaction_id}",
+    status_code=HTTPStatus.NO_CONTENT,
+)
+def delete_transaction(transaction_id: UUID):
+    transaction = session.query(Transaction).get(transaction_id)
+
+    if not transaction:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail="Transaction not found"
+        )
+
+    session.delete(transaction)
+    session.commit()
+    return None

@@ -24,3 +24,13 @@ def create_transaction(transaction_data: TransactionData):
     session.commit()
 
     return transaction
+
+
+@app.get(
+    "/transaction/{transaction_id}",
+    response_model=TransactionResponse,
+    status_code=HTTPStatus.OK,
+)
+def read_transaction(transaction_id: int):
+    transaction = session.query(Transaction).get(transaction_id)
+    return transaction

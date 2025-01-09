@@ -6,10 +6,10 @@ from sqlalchemy import func
 
 from src.database import session, Transaction
 
-router = APIRouter(tags=["Graphs"])
+router = APIRouter(tags=["Graphs"], prefix="/graphs")
 
 
-@router.post("/graphs/transactions/monthly", status_code=HTTPStatus.OK)
+@router.post("/transactions/monthly", status_code=HTTPStatus.OK)
 def monthly_transactions(
     monthsBack: int = 12,
     transaction_type: str = Query("ALL", enum=["ALL", "CREDIT", "DEBIT"]),

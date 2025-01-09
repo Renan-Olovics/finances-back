@@ -5,12 +5,10 @@ from uuid import UUID
 from src.database import Transaction, session
 from src.models import TransactionResponse, TransactionData
 
-router = APIRouter(tags=["Transaction"])
+router = APIRouter(tags=["Transaction"], prefix="/transaction")
 
 
-@router.post(
-    "/transaction", status_code=HTTPStatus.CREATED, response_model=TransactionResponse
-)
+@router.post("/", status_code=HTTPStatus.CREATED, response_model=TransactionResponse)
 def create_transaction(transaction_data: TransactionData):
     transaction = Transaction(
         amount=transaction_data.amount,
@@ -25,7 +23,7 @@ def create_transaction(transaction_data: TransactionData):
 
 
 @router.get(
-    "/transaction/{transaction_id}",
+    "/{transaction_id}",
     response_model=TransactionResponse,
     status_code=HTTPStatus.OK,
 )
@@ -40,7 +38,7 @@ def read_transaction(transaction_id: UUID):
 
 
 @router.get(
-    "/transaction",
+    "/",
     response_model=list[TransactionResponse],
     status_code=HTTPStatus.OK,
 )
@@ -50,7 +48,7 @@ def read_transactions(limit: int = Query(10, le=100), offset: int = Query(0, ge=
 
 
 @router.put(
-    "/transaction/{transaction_id}",
+    "/{transaction_id}",
     response_model=TransactionResponse,
     status_code=HTTPStatus.OK,
 )
@@ -66,7 +64,7 @@ def update_transaction(transaction_id: UUID, transaction_data: TransactionData):
 
 
 @router.delete(
-    "/transaction/{transaction_id}",
+    "/{transaction_id}",
     status_code=HTTPStatus.NO_CONTENT,
 )
 def delete_transaction(transaction_id: UUID):

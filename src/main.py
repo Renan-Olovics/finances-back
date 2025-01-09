@@ -34,6 +34,11 @@ def create_transaction(transaction_data: TransactionData):
     status_code=HTTPStatus.OK,
 )
 def read_transaction(transaction_id: UUID):
+    if not transaction:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail="Transaction not found"
+        )
+
     transaction = session.query(Transaction).get(transaction_id)
     return transaction
 

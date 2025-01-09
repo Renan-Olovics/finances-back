@@ -2,7 +2,6 @@ import uuid
 from enum import Enum
 from sqlalchemy import create_engine, Column, Float, DateTime, Enum as SQLAlchemyEnum
 from sqlalchemy.dialects.postgresql import UUID
-
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 

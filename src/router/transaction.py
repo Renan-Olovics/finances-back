@@ -8,7 +8,7 @@ from src.models import TransactionResponse, TransactionData
 router = APIRouter(tags=["Transaction"], prefix="/transaction")
 
 
-@router.post("/", status_code=HTTPStatus.CREATED, response_model=TransactionResponse)
+@router.post("", status_code=HTTPStatus.CREATED, response_model=TransactionResponse)
 def create_transaction(transaction_data: TransactionData):
     transaction = Transaction(
         amount=transaction_data.amount,
@@ -38,7 +38,7 @@ def read_transaction(transaction_id: UUID):
 
 
 @router.get(
-    "/",
+    "",
     response_model=list[TransactionResponse],
     status_code=HTTPStatus.OK,
 )

@@ -1,13 +1,14 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
-from src.router import transaction
+from src.router import transaction, graphs
 
 
 app = FastAPI()
 
 
 app.include_router(transaction.router)
+app.include_router(graphs.router)
 
 
 @app.get("/", response_class=HTMLResponse)

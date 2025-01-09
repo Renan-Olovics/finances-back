@@ -43,7 +43,7 @@ def read_transaction(transaction_id: UUID):
     response_model=list[TransactionResponse],
     status_code=HTTPStatus.OK,
 )
-def read_transactions(limit: UUID = Query(10, le=100), offset: int = Query(0, ge=0)):
+def read_transactions(limit: int = Query(10, le=100), offset: int = Query(0, ge=0)):
     transactions = session.query(Transaction).offset(offset).limit(limit).all()
     return transactions
 

@@ -1,8 +1,16 @@
 import uuid
 from enum import Enum
-from sqlalchemy import create_engine, Column, Float, DateTime, Enum as SQLAlchemyEnum
+from sqlalchemy import (
+    create_engine,
+    Column,
+    Float,
+    DateTime,
+    Enum as SQLAlchemyEnum,
+    String,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import sessionmaker, declarative_base
+from os import getenv
 
 
 db = create_engine("postgresql://user:password@localhost:5432/db")
@@ -30,6 +38,20 @@ class Transaction(Base):
         self.amount = amount
         self.date = date
         self.type = type
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column("id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column("name", String, nullable=False)
+    email = Column("email", String, nullable=False, unique=True)
+    password = Column("password", String, nullable=False)
+
+    def _init__(self, name, email, password):
+        self.name = name
+        self.email = email
+        self.password = password
 
 
 Base.metadata.create_all(bind=db)

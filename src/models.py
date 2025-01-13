@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from uuid import UUID
 from datetime import datetime
 from enum import Enum
@@ -17,3 +17,21 @@ class TransactionData(BaseModel):
 
 class TransactionResponse(TransactionData):
     id: UUID
+
+
+class UserData(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
+
+
+class UserResponse(BaseModel):
+    id: UUID
+    name: str
+    email: EmailStr
+    token: str
+
+
+class LoginData(BaseModel):
+    email: EmailStr
+    password: str

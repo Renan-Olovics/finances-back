@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import select
 from bcrypt import hashpw, gensalt, checkpw
 from http import HTTPStatus
 from jwt import encode
 
-from src.models import UserData, UserResponse, LoginData
+from src.models import UserData, UserResponse, LoginData, Token
 from src.database import session
 from src.database import User
 
@@ -53,7 +55,7 @@ def login_user(data: LoginData):
             detail="Invalid email or password.",
         )
 
-    if not checkpw(data.password.encode(), user.password.encode()):
+    if not verify_password(data.password, user.password):
         raise HTTPException(
             status_code=HTTPStatus.UNAUTHORIZED,
             detail="Invalid email or password.",
@@ -73,3 +75,39 @@ def login_user(data: LoginData):
             algorithm="HS256",
         ),
     )
+
+
+@router.post("/token", response_model=Token)
+def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+):
+    print("❓❓❓", form_data)
+    user = session.scalar(select(User).where(User.email == form_data.username))
+
+    if not user:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail="Incorrect email or password",
+        )
+
+    if not verify_password(form_data.password, user.password):
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail="Incorrect email or password",
+        )
+
+    access_token = encode(
+        {
+            "id": str(user.id),
+            "name": user.name,
+            "email": user.email,
+        },
+        "secret",
+        algorithm="HS256",
+    )
+
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+def verify_password(plain_password, hashed_password):
+    return checkpw(plain_password.encode(), hashed_password.encode())

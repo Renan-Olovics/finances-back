@@ -1,15 +1,20 @@
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query, HTTPException, Depends
 from http import HTTPStatus
 from uuid import UUID
 
-from src.database import Transaction, session
+from src.database import Transaction, session, User
+from src.security import get_current_user
 from src.models import TransactionResponse, TransactionData
 
 router = APIRouter(tags=["Transaction"], prefix="/transaction")
 
 
 @router.post("", status_code=HTTPStatus.CREATED, response_model=TransactionResponse)
-def create_transaction(transaction_data: TransactionData):
+def create_transaction(
+    transaction_data: TransactionData,
+    current_user: User = Depends(get_current_user),
+):
+    print(current_user)
     transaction = Transaction(
         amount=transaction_data.amount,
         date=transaction_data.date,
@@ -27,7 +32,10 @@ def create_transaction(transaction_data: TransactionData):
     response_model=TransactionResponse,
     status_code=HTTPStatus.OK,
 )
-def read_transaction(transaction_id: UUID):
+def read_transaction(
+    transaction_id: UUID,
+    current_user: User = Depends(get_current_user),
+):
     if not transaction:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail="Transaction not found"
@@ -42,7 +50,11 @@ def read_transaction(transaction_id: UUID):
     response_model=list[TransactionResponse],
     status_code=HTTPStatus.OK,
 )
-def read_transactions(limit: int = Query(10, le=100), offset: int = Query(0, ge=0)):
+def read_transactions(
+    limit: int = Query(10, le=100),
+    offset: int = Query(0, ge=0),
+    current_user: User = Depends(get_current_user),
+):
     transactions = session.query(Transaction).offset(offset).limit(limit).all()
     return transactions
 
@@ -52,7 +64,11 @@ def read_transactions(limit: int = Query(10, le=100), offset: int = Query(0, ge=
     response_model=TransactionResponse,
     status_code=HTTPStatus.OK,
 )
-def update_transaction(transaction_id: UUID, transaction_data: TransactionData):
+def update_transaction(
+    transaction_id: UUID,
+    transaction_data: TransactionData,
+    current_user: User = Depends(get_current_user),
+):
     transaction = session.query(Transaction).get(transaction_id)
     transaction.amount = transaction_data.amount
     transaction.date = transaction_data.date
@@ -67,7 +83,10 @@ def update_transaction(transaction_id: UUID, transaction_data: TransactionData):
     "/{transaction_id}",
     status_code=HTTPStatus.NO_CONTENT,
 )
-def delete_transaction(transaction_id: UUID):
+def delete_transaction(
+    transaction_id: UUID,
+    current_user: User = Depends(get_current_user),
+):
     transaction = session.query(Transaction).get(transaction_id)
 
     if not transaction:

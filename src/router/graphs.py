@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Query
-from http import HTTPStatus
-from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from fastapi import APIRouter, Query, Depends
+from src.security import get_current_user
+from datetime import datetime
+from http import HTTPStatus
 from sqlalchemy import func
+from src.database import User
 
 from src.database import session, Transaction
 
@@ -13,6 +15,7 @@ router = APIRouter(tags=["Graphs"], prefix="/graphs")
 def monthly_transactions(
     monthsBack: int = 12,
     transaction_type: str = Query("ALL", enum=["ALL", "CREDIT", "DEBIT"]),
+    current_user: User = Depends(get_current_user),
 ):
     first_month = datetime.now() - relativedelta(months=monthsBack)
 
